@@ -1,3 +1,5 @@
+require 'json'
+
 module Smscru
   class Client
     attr_reader :config
