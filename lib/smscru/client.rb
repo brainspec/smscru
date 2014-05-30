@@ -5,7 +5,7 @@ module Smscru
   class Client
     attr_reader :config
 
-    def initialize(options)
+    def initialize(options={})
       @config = Smscru.config.dup
       @config.update(options)
     end
