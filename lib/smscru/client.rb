@@ -1,8 +1,9 @@
 require 'json'
-require 'net/http'
+require 'faraday'
 
 module Smscru
   class Client
+    SEND_URL = 'http://smsc.ru/sys/send.php'
     attr_reader :config
 
     def initialize(options={})
@@ -13,15 +14,19 @@ module Smscru
     def send_message(text, phones, options={})
       params = {
         mes:     text,
-        phones:  Array(phones),
+        phones:  Array(phones).join(','),
         login:   config.login,
         psw:     config.password,
         charset: 'utf-8',
         fmt:     3
       }
 
-      uri = URI.parse('http://smsc.ru/sys/send.php')
-      response = Net::HTTP.post_form(uri, params.merge(options))
+      connection = Faraday.new do |i|
+        i.request  :url_encoded
+        i.response :logger
+        i.adapter  Faraday.default_adapter
+      end
+      response = connection.post SEND_URL, params
 
       JSON.parse(response.body)
     end
