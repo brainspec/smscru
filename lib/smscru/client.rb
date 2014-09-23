@@ -17,17 +17,17 @@ module Smscru
         phones:  Array(phones).join(','),
         login:   config.login,
         psw:     config.password,
-        # charset: 'utf-8',
+        charset: 'utf-8',
         fmt:     3
       }
 
       uri = URI.parse('http://smsc.ru/sys/send.php')
-      connection = Faraday.new(url: "#{uri.scheme}://#{uri.host}") do |i|
+      connection = Faraday.new do |i|
         i.request  :url_encoded
         i.response :logger
         i.adapter  Faraday.default_adapter
       end
-      response = connection.post uri.path, params
+      response = connection.post uri.to_s, params
 
       JSON.parse(response.body)
     end
